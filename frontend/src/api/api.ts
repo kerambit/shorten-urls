@@ -1,4 +1,4 @@
-import type { AnalyticsInfo, UrlInfo } from "./api.types";
+import type { AnalyticsInfo, UrlInfo, CreateResponse } from "./api.types";
 
 async function fetchWithHandlingError<T>(
   fetchFn: Promise<Response>,
@@ -20,16 +20,19 @@ async function fetchWithHandlingError<T>(
   }
 }
 
-const baseUrl = "http://localhost:3001";
+const baseUrl = "http://localhost:3000";
 
 export async function createUrl(
   originalUrl: string,
   alias?: string,
   expiresAt?: string,
-): Promise<void> {
+): Promise<CreateResponse> {
   const url = `${baseUrl}/shorten`;
-  await fetchWithHandlingError(
+  return await fetchWithHandlingError(
     fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
       method: "POST",
       body: JSON.stringify({
         originalUrl,
@@ -37,7 +40,11 @@ export async function createUrl(
         expiresAt,
       }),
     }),
-    undefined,
+    {
+      shortUrl: "",
+      originalUrl: "",
+      expiresAt: "",
+    },
   );
 }
 
@@ -56,7 +63,7 @@ export async function getInfo(shortUrl: string): Promise<UrlInfo> {
 
   return await fetchWithHandlingError(fetch(url), {
     originalUrl: "",
-    createdAt: new Date(),
+    createdAt: "",
     clickCount: 0,
   });
 }
