@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { UrlModule } from './url/url.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
-// console.log(process.env);
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -23,6 +23,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         autoLoadEntities: true,
       }),
       inject: [ConfigService],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
     }),
     UrlModule,
   ],
