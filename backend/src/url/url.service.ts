@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { Url } from './entities/url.entity';
 import { UrlClick } from './entities/url-click.entity';
 import { CreateUrlDto } from './dto/create-url.dto';
@@ -40,7 +40,10 @@ export class UrlService {
   }
 
   public async findByShortUrl(shortUrl: string): Promise<Url> {
-    const url = await this.urlRepository.findOne({ where: { shortUrl } });
+    const url = await this.urlRepository.findOne({
+      where: { shortUrl, expiresAt: MoreThan(new Date()) },
+    });
+
     if (!url) {
       throw new NotFoundException('URL not found');
     }
